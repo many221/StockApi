@@ -9,9 +9,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @RestController
 @RequestMapping ("/api/overview")
@@ -184,6 +187,43 @@ public class OverviewController {
         repository.deleteAll ();
 
         return ResponseEntity.ok (count + " Overviews Have Been Deleted");
+
+    }
+
+
+    @GetMapping ("/id/{id}")
+    public ResponseEntity<?> getOverviewById (@PathVariable long id){
+
+        try{
+
+            //figure how to send body from here
+            return new ResponseEntity<Overview> ( repository.findById ( id ).orElseThrow (() -> new ResponseStatusException ( HttpStatus.NOT_FOUND) ), HttpStatus.OK );
+
+        } catch (Exception e){
+
+            return ApiErrorHandling.genericApiError ( e );
+        }
+    }
+
+
+    @DeleteMapping ("/id/{id}")
+    public ResponseEntity<?> deleteByOverviewById (@PathVariable long id){
+
+        try{
+
+            Overview overview = repository.findById ( id ).orElseThrow (() -> new ResponseStatusException ( HttpStatus.BAD_REQUEST ));
+
+            String deleteMessage = "{ID: " + overview.getId () + "| Symbol: " + overview.getSymbol () + "} Has Been Deleted";
+
+            repository.delete ( overview );
+
+            return ResponseEntity.ok (deleteMessage);
+
+        } catch (Exception e){
+
+            return ApiErrorHandling.genericApiError ( e );
+
+        }
 
     }
 
