@@ -2,7 +2,7 @@ package com.careerdev.StocksApi.controllers;
 
 import com.careerdev.StocksApi.models.Overview;
 import com.careerdev.StocksApi.repositories.OverviewRepository;
-import com.careerdev.StocksApi.utils.ApiErrorHandling;
+import com.careerdev.StocksApi.utils.ApiError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -42,12 +41,12 @@ public class OverviewController {
         }
         catch (IllegalArgumentException e){
 
-            return ApiErrorHandling.customApiError ( "Check Url", HttpStatus.INTERNAL_SERVER_ERROR );
+            return ApiError.customApiError ( "Check Url", 500 );
 
         }
         catch (Exception e){
 
-            return ApiErrorHandling.genericApiError ( e );
+            return ApiError.genericApiError ( e );
 
         }
     }
@@ -64,11 +63,11 @@ public class OverviewController {
 
             if (response == null){
 
-                return ApiErrorHandling.customApiError ( "AV server did not respond", HttpStatus.INTERNAL_SERVER_ERROR );
+                ApiError.throwErr ( 500,"AV server did not respond" );
 
             } else if (response.getSymbol () == null){
 
-                return ApiErrorHandling.customApiError ( "No Data recieved", HttpStatus.NOT_FOUND );
+                ApiError.throwErr ( 500,"No Data recieved" );
 
             }
 
@@ -76,22 +75,24 @@ public class OverviewController {
 
             return ResponseEntity.ok (savedOverview);
 
-        }
+        } catch (HttpClientErrorException e){
 
-        catch (DataIntegrityViolationException e ){
+            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
 
-            return ApiErrorHandling.customApiError ( "Can't Upload Duplicate Stock", HttpStatus.BAD_REQUEST );
+        } catch (DataIntegrityViolationException e ){
+
+            return ApiError.customApiError ( "Can't Upload Duplicate Stock", 400 );
         }
 
         catch (IllegalArgumentException e){
 
-            return ApiErrorHandling.customApiError ( "Check Url", HttpStatus.INTERNAL_SERVER_ERROR );
+            return ApiError.customApiError ( "Check Url",500 );
 
         }
 
         catch (Exception e){
 
-            return ApiErrorHandling.genericApiError ( e );
+            return ApiError.genericApiError ( e );
 
         }
     }
@@ -108,19 +109,23 @@ public class OverviewController {
 
             if (response == null){
 
-                return ApiErrorHandling.customApiError ( "AV server did not respond", HttpStatus.INTERNAL_SERVER_ERROR );
+                ApiError.throwErr ( 500,"AV server did not respond" );
 
             } else if (response.getSymbol () == null){
 
-                return ApiErrorHandling.customApiError ( "No Data recieved" + symbol, HttpStatus.NOT_FOUND );
+                ApiError.throwErr ( 404,"Invalid Stock: " + symbol );
 
             }
 
             return ResponseEntity.ok (response);
 
+        } catch (HttpClientErrorException e){
+
+            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
+
         } catch (Exception e){
 
-            return ApiErrorHandling.genericApiError ( e );
+            return ApiError.genericApiError ( e );
 
         }
     }
@@ -136,11 +141,11 @@ public class OverviewController {
 
             if (response == null){
 
-                return ApiErrorHandling.customApiError ( "AV server did not respond", HttpStatus.INTERNAL_SERVER_ERROR );
+                ApiError.throwErr ( 500,"AV server did not respond" );
 
             } else if (response.getSymbol () == null){
 
-                return ApiErrorHandling.customApiError ( "No Data recieved" + symbol, HttpStatus.NOT_FOUND );
+                ApiError.throwErr ( 404,"Invalid Stock: " + symbol );
 
             }
 
@@ -148,16 +153,17 @@ public class OverviewController {
 
             return ResponseEntity.ok (savedOverview);
 
-        }
+        } catch (HttpClientErrorException e){
 
-        catch (DataIntegrityViolationException e ){
+            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
 
-            return ApiErrorHandling.customApiError ( "Can't Upload Duplicate Stock", HttpStatus.BAD_REQUEST );
-        }
+        } catch (DataIntegrityViolationException e ){
 
-        catch (Exception e){
+            return ApiError.customApiError ( "Can't Upload Duplicate Stock", 400 );
 
-            return ApiErrorHandling.genericApiError ( e );
+        } catch (Exception e){
+
+            return ApiError.genericApiError ( e );
 
         }
     }
@@ -184,6 +190,9 @@ public class OverviewController {
 
         long count = repository.count ();
 
+        if (repository.count () == 0)
+            return ResponseEntity.ok ("Database Is Already Empty");
+
         repository.deleteAll ();
 
         return ResponseEntity.ok (count + " Overviews Have Been Deleted");
@@ -192,40 +201,65 @@ public class OverviewController {
 
 
     @GetMapping ("/id/{id}")
-    public ResponseEntity<?> getOverviewById (@PathVariable long id){
+    public ResponseEntity<?> getOverviewById (@PathVariable String id){
 
         try{
 
-            //figure how to send body from here
-            return new ResponseEntity<Overview> ( repository.findById ( id ).orElseThrow (() -> new ResponseStatusException ( HttpStatus.NOT_FOUND) ), HttpStatus.OK );
+            Optional<Overview> overview = repository.findById ( Long.parseLong ( id ) );
+
+            if (overview.isEmpty ())
+                ApiError.throwErr ( 404,"Invalid Stock ID: " + id  );
+
+            return ResponseEntity.ok ( overview.get () );
+
+            //return new ResponseEntity<Overview> ( repository.findById ( id ).orElseThrow (() -> new ResponseStatusException ( HttpStatus.NOT_FOUND) ), HttpStatus.OK );
+
+        } catch (HttpClientErrorException e){
+
+            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
+
+        } catch (NumberFormatException e){
+
+            return ApiError.customApiError ( "Invalid Id : " + id + " Must Be A Number", 400 );
 
         } catch (Exception e){
 
-            return ApiErrorHandling.genericApiError ( e );
+            return ApiError.genericApiError ( e );
+
         }
     }
 
 
     @DeleteMapping ("/id/{id}")
-    public ResponseEntity<?> deleteByOverviewById (@PathVariable long id){
+    public ResponseEntity<?> deleteByOverviewById (@PathVariable String id){
 
         try{
 
-            Overview overview = repository.findById ( id ).orElseThrow (() -> new ResponseStatusException ( HttpStatus.BAD_REQUEST ));
+            Optional<Overview> overview = repository.findById ( Long.parseLong ( id ) );
 
-            String deleteMessage = "{ID: " + overview.getId () + "| Symbol: " + overview.getSymbol () + "} Has Been Deleted";
+            if (overview.isEmpty ())
+                ApiError.throwErr ( 404,"Invalid Stock ID: " + id  );
 
-            repository.delete ( overview );
+            repository.delete ( overview.get () );
 
-            return ResponseEntity.ok (deleteMessage);
+            return ResponseEntity.ok (overview.get ().getSymbol () + " has been deleted");
+
+        } catch (HttpClientErrorException e){
+
+            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
+
+        } catch (NumberFormatException e){
+
+            return ApiError.customApiError ( "Invalid Id : " + id + " Must Be A Number", 400 );
 
         } catch (Exception e){
 
-            return ApiErrorHandling.genericApiError ( e );
+            return ApiError.genericApiError ( e );
 
         }
 
     }
+
 
 }
 
