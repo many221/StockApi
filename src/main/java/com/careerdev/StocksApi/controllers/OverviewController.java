@@ -6,13 +6,13 @@ import com.careerdev.StocksApi.utils.ApiError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -70,7 +70,6 @@ public class OverviewController {
             Overview response = restTemplate.getForObject ( tickerURL,Overview.class );
 
             if (response == null){
-
                 ApiError.throwErr ( 500,"AV server did not respond" );
 
             } else if (response.getSymbol () == null){
@@ -159,6 +158,181 @@ public class OverviewController {
         }
     }
 
+    @GetMapping ("/symbol/{symbol}")
+    public ResponseEntity<?> getOverviewBySymbol (@PathVariable String symbol){
+
+        try{
+
+            Optional<Overview> overview = repository.findBySymbol ( symbol );
+
+            if (overview.isEmpty())
+                ApiError.throwErr ( 404,"Invalid Stock: " + symbol  );
+
+            return ResponseEntity.ok ( overview );
+
+            //return new ResponseEntity<Overview> ( repository.findById ( id ).orElseThrow (() -> new ResponseStatusException ( HttpStatus.NOT_FOUND) ), HttpStatus.OK );
+
+        } catch (HttpClientErrorException e){
+
+            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
+
+        } catch (Exception e){
+
+            return ApiError.genericApiError ( e );
+
+        }
+    }
+
+    @GetMapping ("/name/{name}")
+    public ResponseEntity<?> getOverviewByName (@PathVariable String name){
+
+        try{
+
+            Optional<Overview> overview = repository.findByName ( name );
+
+            if (overview.isEmpty())
+                ApiError.throwErr ( 404,"Invalid Name: " + name  );
+
+            return ResponseEntity.ok ( overview );
+
+            //return new ResponseEntity<Overview> ( repository.findById ( id ).orElseThrow (() -> new ResponseStatusException ( HttpStatus.NOT_FOUND) ), HttpStatus.OK );
+
+        } catch (HttpClientErrorException e){
+
+            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
+
+        } catch (Exception e){
+
+            return ApiError.genericApiError ( e );
+
+        }
+    }
+
+    @GetMapping ("/exchange/{exchange}")
+    public ResponseEntity<?> getOverviewByExchange (@PathVariable String exchange){
+
+        try{
+
+            List<Overview> overview = repository.findByExchange ( exchange );
+
+            if (overview.isEmpty())
+                ApiError.throwErr ( 404,"Invalid Exchange: " + exchange );
+
+            return ResponseEntity.ok ( overview );
+
+            //return new ResponseEntity<Overview> ( repository.findById ( id ).orElseThrow (() -> new ResponseStatusException ( HttpStatus.NOT_FOUND) ), HttpStatus.OK );
+
+        } catch (HttpClientErrorException e){
+
+            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
+
+        } catch (Exception e){
+
+            return ApiError.genericApiError ( e );
+
+        }
+    }
+
+    @GetMapping ("/asset/{asset}")
+    public ResponseEntity<?> getOverviewByAssetType (@PathVariable String asset){
+
+        try{
+
+            List<Overview> overview = repository.findByAssetType ( asset );
+
+            if (overview.isEmpty())
+                ApiError.throwErr ( 404,"Invalid Asset Type: " + asset );
+
+            return ResponseEntity.ok ( overview );
+
+            //return new ResponseEntity<Overview> ( repository.findById ( id ).orElseThrow (() -> new ResponseStatusException ( HttpStatus.NOT_FOUND) ), HttpStatus.OK );
+
+        } catch (HttpClientErrorException e){
+
+            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
+
+        } catch (Exception e){
+
+            return ApiError.genericApiError ( e );
+
+        }
+    }
+
+    @GetMapping ("/currency/{currency}")
+    public ResponseEntity<?> getOverviewByCurrency (@PathVariable String currency){
+
+        try{
+
+            List<Overview> overview = repository.findByCurrency ( currency );
+
+            if (overview.isEmpty())
+                ApiError.throwErr ( 404,"Invalid Currency: " + currency );
+
+            return ResponseEntity.ok ( overview );
+
+            //return new ResponseEntity<Overview> ( repository.findById ( id ).orElseThrow (() -> new ResponseStatusException ( HttpStatus.NOT_FOUND) ), HttpStatus.OK );
+
+        } catch (HttpClientErrorException e){
+
+            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
+
+        } catch (Exception e){
+
+            return ApiError.genericApiError ( e );
+
+        }
+    }
+
+    @GetMapping ("/country/{country}")
+    public ResponseEntity<?> getOverviewByCountry (@PathVariable String country){
+
+        try{
+
+            List<Overview> overview = repository.findByCountry ( country );
+
+            if (overview.isEmpty())
+                ApiError.throwErr ( 404,"Invalid Country: " + country );
+
+            return ResponseEntity.ok ( overview );
+
+            //return new ResponseEntity<Overview> ( repository.findById ( id ).orElseThrow (() -> new ResponseStatusException ( HttpStatus.NOT_FOUND) ), HttpStatus.OK );
+
+        } catch (HttpClientErrorException e){
+
+            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
+
+        } catch (Exception e){
+
+            return ApiError.genericApiError ( e );
+
+        }
+    }
+
+    @GetMapping ("/sector/{sector}")
+    public ResponseEntity<?> getOverviewBySector (@PathVariable String sector){
+
+        try{
+
+            List<Overview> overview = repository.findBySector ( sector );
+
+            if (overview.isEmpty())
+                ApiError.throwErr ( 404,"Invalid Sector: " + sector );
+
+            return ResponseEntity.ok ( overview );
+
+            //return new ResponseEntity<Overview> ( repository.findById ( id ).orElseThrow (() -> new ResponseStatusException ( HttpStatus.NOT_FOUND) ), HttpStatus.OK );
+
+        } catch (HttpClientErrorException e){
+
+            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
+
+        } catch (Exception e){
+
+            return ApiError.genericApiError ( e );
+
+        }
+    }
+
 
     @DeleteMapping ("/id/{id}")
     public ResponseEntity<?> deleteByOverviewById (@PathVariable String id){
@@ -189,6 +363,34 @@ public class OverviewController {
         }
 
     }
+
+//    @DeleteMapping ("/symbol/{symbol}")
+//    public ResponseEntity<?> DeleteOverviewBySymbol (@PathVariable String symbol){
+//
+//        try{
+//
+//            Optional<Overview> overview = repository.findBySymbol ( symbol );
+//
+//            if (overview.isEmpty())
+//                ApiError.throwErr ( 404,"Invalid Stock: " + symbol  );
+//
+//           Long test =  repository.removeBySymbol ( symbol );
+//
+//            return ResponseEntity.ok (  test + " Has Been Deleted" );
+//
+//            //return new ResponseEntity<Overview> ( repository.findById ( id ).orElseThrow (() -> new ResponseStatusException ( HttpStatus.NOT_FOUND) ), HttpStatus.OK );
+//
+//        } catch (HttpClientErrorException e){
+//
+//            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
+//
+//        } catch (Exception e){
+//
+//            return ApiError.genericApiError ( e );
+//
+//        }
+//    }
+
 
 
 }
