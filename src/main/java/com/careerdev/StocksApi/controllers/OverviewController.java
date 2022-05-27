@@ -27,76 +27,6 @@ public class OverviewController {
 
     String URL = "https://www.alphavantage.co/query?function=OVERVIEW";
 
-    @GetMapping ("/test")
-    public ResponseEntity<?> testOverview(RestTemplate restTemplate){
-
-        try {
-
-            String testURL = URL +  "&symbol=IBM&apikey=demo";
-
-            Overview response = restTemplate.getForObject ( testURL, Overview.class );
-
-            return ResponseEntity.ok (response);
-
-        }
-        catch (IllegalArgumentException e){
-
-            return ApiError.customApiError ( "Check Url", 500 );
-
-        }
-        catch (Exception e){
-
-            return ApiError.genericApiError ( e );
-
-        }
-    }
-
-    //test to db
-    @PostMapping("/test")
-    public ResponseEntity<?> testDbOverview(RestTemplate restTemplate){
-
-        try {
-
-            String testURL = URL +  "&symbol=IBM&apikey=demo";
-
-            Overview response = restTemplate.getForObject ( testURL, Overview.class );
-
-            if (response == null){
-
-                ApiError.throwErr ( 500,"AV server did not respond" );
-
-            } else if (response.getSymbol () == null){
-
-                ApiError.throwErr ( 500,"No Data recieved" );
-
-            }
-
-            Overview savedOverview = repository.save ( response );
-
-            return ResponseEntity.ok (savedOverview);
-
-        } catch (HttpClientErrorException e){
-
-            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
-
-        } catch (DataIntegrityViolationException e ){
-
-            return ApiError.customApiError ( "Can't Upload Duplicate Stock", 400 );
-        }
-
-        catch (IllegalArgumentException e){
-
-            return ApiError.customApiError ( "Check Url",500 );
-
-        }
-
-        catch (Exception e){
-
-            return ApiError.genericApiError ( e );
-
-        }
-    }
-
 
     @GetMapping ("/{symbol}")
     public ResponseEntity<?> dynamicOverview (@PathVariable String symbol, RestTemplate restTemplate){
@@ -177,7 +107,7 @@ public class OverviewController {
 
         if (overviews.isEmpty ()){
 
-            return ResponseEntity.ok ("The Database Is Empty");
+            return ResponseEntity.status ( 404 ).body ( "Database Is Empty" );
 
         }
 
