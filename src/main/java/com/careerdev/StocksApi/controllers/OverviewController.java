@@ -3,10 +3,12 @@ package com.careerdev.StocksApi.controllers;
 import com.careerdev.StocksApi.models.Overview;
 import com.careerdev.StocksApi.repositories.OverviewRepository;
 import com.careerdev.StocksApi.utils.ApiError;
+import com.careerdev.StocksApi.utils.Csv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -333,15 +335,74 @@ public class OverviewController {
         }
     }
 
-    @GetMapping("/csv")
+    @PostMapping ("/fill")
     public ResponseEntity<?> getCsvFile (RestTemplate restTemplate){
 
         try {
-            String lURL= "https://www.alphavantage.co/query?function=LISTING_STATUS&apikey=" + env.getProperty (  "STOCK_API_KEY" );
 
-          String test =  restTemplate.getForObject ( lURL,String.class );
+            int count = 1;
 
-            return ResponseEntity.ok (test);
+            String lURL = "https://www.alphavantage.co/query?function=LISTING_STATUS&apikey=" + env.getProperty ( "STOCK_API_KEY" );
+
+            String test = restTemplate.getForObject ( lURL, String.class );
+
+            System.out.println ( count++ );
+
+            assert test != null;
+            ArrayList<String> symbols = Csv.csvToArrayListByColumn ( test, 0, 600 );
+
+            System.out.println ( count++ );
+
+            ArrayList<Overview> overviews = new ArrayList<> ();
+
+//            for (String s:
+//                 symbols) {
+//
+//                    Overview ov = restTemplate.getForObject ( symbolUrl ( s ),Overview.class );
+//
+//                    if (ov.getSymbol () != null)
+//                        overviews.add ( ov );
+//            }
+
+            System.out.println ( count++ );
+
+//            for (String s : symbols) {
+//                overviews.add ( dynamicOverview ( s,restTemplate ).getBody ());
+//            }
+
+            //symbols.stream ().forEach ( symbol -> repository.save ( restTemplate.getForObject (  symbolUrl (symbol) , Overview.class ) ) );
+
+            symbols.stream ().forEach ( symbol -> {
+
+                Overview ov = restTemplate.getForObject ( symbolUrl ( symbol ), Overview.class );
+
+                if (ov.getSymbol () != null)
+
+                    if (ApiError.isStrNaN ( ov.getSymbol () ))
+                        overviews.add ( ov );
+            } );
+
+            // Overview response = restTemplate.getForObject ( tickerURL,Overview.class );
+
+//            if (response == null){
+//                ApiError.throwErr ( 500,"AV server did not respond" );
+//
+//            } else if (response.getSymbol () == null){
+//
+//                ApiError.throwErr ( 404,"Invalid Stock: " + symbol );
+//
+//            }
+//(long) symbols.size () + " Stocks Have Been Added"
+
+            return ResponseEntity.ok ( overviews );
+
+        } catch (HttpClientErrorException e){
+
+            return ApiError.customApiError ( e.getMessage (), e.getStatusCode ().value ());
+
+        } catch (DataIntegrityViolationException e ){
+
+            return ApiError.customApiError ( "Can't Upload Duplicate Stock", 400 );
 
         }catch (Exception e){
 
@@ -408,6 +469,11 @@ public class OverviewController {
 //        }
 //    }
 
+    public String symbolUrl (String symbol){
+
+        return URL + "&symbol=" + symbol + "&apikey=" + env.getProperty ( "STOCK_API_KEY" );
+
+    }
 
 
 }

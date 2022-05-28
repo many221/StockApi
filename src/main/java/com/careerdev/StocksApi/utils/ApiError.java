@@ -21,4 +21,17 @@ public class ApiError {
         throw new HttpClientErrorException ( HttpStatus.valueOf ( status ), message );
 
     }
+
+    public static boolean isStrNaN(String strNum) {
+        if (strNum == null) {
+            return true;
+        }
+        try {
+            Long.parseLong ( strNum );
+        } catch (NumberFormatException nfe) {
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -8,7 +8,7 @@ public class Csv {
     // Takes A String of CSV data then parses it then returns it as an array list
 
 
-public static ArrayList<String> csvToArrayList (String csv, int column)  {
+    public static ArrayList<String> csvToArrayListByColumn (String csv, int column)  {
 
         ArrayList<String> strArr = new ArrayList<> ();
 
@@ -30,7 +30,16 @@ public static ArrayList<String> csvToArrayList (String csv, int column)  {
        // tickList.stream ().forEach ( System.out::println );
 
 
-}
+    }
+
+    public static ArrayList<String> csvToArrayListByColumn (String csv,int column, long limit) {
+
+        ArrayList<String> strArr = new ArrayList<> ();
+
+        csv.lines ().skip ( 1 ).limit ( limit ).forEach ( s -> strArr.add ( s.split ( "," )[column] ) );
+
+        return strArr;
+    }
 
     public static ArrayList<String[]> csvToArrayList (String csv) {
 
@@ -40,6 +49,16 @@ public static ArrayList<String> csvToArrayList (String csv, int column)  {
 
         return strArr;
     }
+
+    public static ArrayList<String[]> csvToArrayList (String csv, long limit) {
+
+        ArrayList<String[]> strArr = new ArrayList<> ();
+
+        csv.lines ().skip ( 1 ).limit ( limit ).forEach ( s -> strArr.add ( s.split ( "," ) ) );
+
+        return strArr;
+    }
+
 
     public static void main(String[] args) {
 
