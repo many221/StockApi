@@ -333,6 +333,23 @@ public class OverviewController {
         }
     }
 
+    @GetMapping("/csv")
+    public ResponseEntity<?> getCsvFile (RestTemplate restTemplate){
+
+        try {
+            String lURL= "https://www.alphavantage.co/query?function=LISTING_STATUS&apikey=" + env.getProperty (  "STOCK_API_KEY" );
+
+          String test =  restTemplate.getForObject ( lURL,String.class );
+
+            return ResponseEntity.ok (test);
+
+        }catch (Exception e){
+
+           return ApiError.genericApiError ( e );
+
+        }
+    }
+
 
     @DeleteMapping ("/id/{id}")
     public ResponseEntity<?> deleteByOverviewById (@PathVariable String id){
