@@ -1,6 +1,5 @@
 package com.careerdev.StocksApi.utils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Csv {
@@ -59,17 +58,17 @@ public class Csv {
         return strArr;
     }
 
-
-    public static void main(String[] args) {
-
-        String test = "symbol,name,exchange,assetType,ipoDate,delistingDate,status\n" +
-                "A,Agilent Technologies Inc,NYSE,Stock,1999-11-18,null,Active\n" +
-                "AA,Alcoa Corp,NYSE,Stock,2016-10-18,null,Active\n" +
-                "AAA,AAF FIRST PRIORITY CLO BOND ETF ,NYSE ARCA,ETF,2020-09-09,null,Active\n" +
-                "AAAU,Goldman Sachs Physical Gold ETF,BATS,ETF,2018-08-15,null,Active\n" +
-                "AAC,Ares Acquisition Corporation - Class A,NYSE,Stock,2021-03-25,null,Active";
-
-        System.out.println (csvToArrayList ( test ));
-
-    }
+//
+//    public static void main(String[] args) {
+//
+//        String test = "symbol,name,exchange,assetType,ipoDate,delistingDate,status\n" +
+//                "A,Agilent Technologies Inc,NYSE,Stock,1999-11-18,null,Active\n" +
+//                "AA,Alcoa Corp,NYSE,Stock,2016-10-18,null,Active\n" +
+//                "AAA,AAF FIRST PRIORITY CLO BOND ETF ,NYSE ARCA,ETF,2020-09-09,null,Active\n" +
+//                "AAAU,Goldman Sachs Physical Gold ETF,BATS,ETF,2018-08-15,null,Active\n" +
+//                "AAC,Ares Acquisition Corporation - Class A,NYSE,Stock,2021-03-25,null,Active";
+//
+//        System.out.println (csvToArrayList ( test ));
+//
+//    }
 }
