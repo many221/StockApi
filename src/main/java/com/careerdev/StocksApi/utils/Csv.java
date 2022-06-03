@@ -1,74 +1,160 @@
 package com.careerdev.StocksApi.utils;
 
+import java.io.*;
 import java.util.ArrayList;
 
 public class Csv {
 
     // Takes A String of CSV data then parses it then returns it as an array list
 
+    //TODO Get rid of Stocks with Dashes ✅
+    //TODO reader and writer ✅
+    //TODO Write parsed data to companySymbols file ✅
+    //TODO Create new methods for where to start and stop based off of companySymbolCSV
 
-    public static ArrayList<String> csvToArrayListByColumn (String csv, int column)  {
-
-        ArrayList<String> strArr = new ArrayList<> ();
-
-        csv.lines ().skip ( 1 ).forEach ( s -> strArr.add ( s.split ( "," )[column] )  );
-
-        return strArr;
+    //O Blank space at beginning and ending of array
 
 
-//        ArrayList<String[]> arr = new ArrayList<> ();
-//        csv.lines ().skip ( 1 ).forEach ( s -> arr.add ( s.split ( "," ) )  );
-       // arr.stream ().forEach ( s -> System.out.println ( s[0]) );
-//        List<String> tickList = null;
-//        Iterator<String[]> i = arr.iterator ();
-//        while(i.hasNext ()){
-//
-//            tickList.add ( i.next ()[0] );
-//
-//       }
-       // tickList.stream ().forEach ( System.out::println );
-
-
-    }
-
-    public static ArrayList<String> csvToArrayListByColumn (String csv,int column, long limit) {
+    public static ArrayList<String> csvFromAAParsing (String csv,int column) {
 
         ArrayList<String> strArr = new ArrayList<> ();
 
-        csv.lines ().skip ( 1 ).limit ( limit ).forEach ( s -> strArr.add ( s.split ( "," )[column] ) );
+        csv.lines ().skip ( 1 ).forEach ( s -> {
+
+            String symbol = s.split ( "," )[column];
+
+            if (!symbol.contains ( "-" ))
+                strArr.add ( symbol );
+
+        } );
 
         return strArr;
     }
 
-    public static ArrayList<String[]> csvToArrayList (String csv) {
+    public static ArrayList<String> reader (String path ){
 
-        ArrayList<String[]> strArr = new ArrayList<> ();
+        ArrayList<String> file = new ArrayList<> ();
 
-        csv.lines ().skip ( 1 ).forEach ( s -> strArr.add ( s.split ( "," ) ) );
+        try {
 
-        return strArr;
+            BufferedReader reader = new BufferedReader(new FileReader ( path ) );
+
+            reader.lines ().skip ( 1 ).limit ( 10 ).forEach ( file::add );
+
+            reader.close ();
+
+            return file;
+
+        }catch (IOException e){
+
+            e.printStackTrace ();
+
+            return null;
+
+        }
+
+
     }
 
-    public static ArrayList<String[]> csvToArrayList (String csv, long limit) {
+    public static String reader2 (String path){
 
-        ArrayList<String[]> strArr = new ArrayList<> ();
+        StringBuilder file = new StringBuilder ();
 
-        csv.lines ().skip ( 1 ).limit ( limit ).forEach ( s -> strArr.add ( s.split ( "," ) ) );
+        try {
 
-        return strArr;
+            BufferedReader br = new BufferedReader ( new FileReader ( path ) );
+
+            br.lines ().forEach (s -> file.append ( s ).append ( "\n" ));
+
+            return file.toString ();
+
+        }catch (IOException e){
+
+            e.printStackTrace ();
+
+            return e.toString ();
+
+        }
     }
 
-//
-//    public static void main(String[] args) {
-//
-//        String test = "symbol,name,exchange,assetType,ipoDate,delistingDate,status\n" +
-//                "A,Agilent Technologies Inc,NYSE,Stock,1999-11-18,null,Active\n" +
-//                "AA,Alcoa Corp,NYSE,Stock,2016-10-18,null,Active\n" +
-//                "AAA,AAF FIRST PRIORITY CLO BOND ETF ,NYSE ARCA,ETF,2020-09-09,null,Active\n" +
-//                "AAAU,Goldman Sachs Physical Gold ETF,BATS,ETF,2018-08-15,null,Active\n" +
-//                "AAC,Ares Acquisition Corporation - Class A,NYSE,Stock,2021-03-25,null,Active";
-//
-//        System.out.println (csvToArrayList ( test ));
-//
-//    }
+    public static void writer (String path, String str){
+
+        try {
+
+            FileWriter file = new FileWriter ( path,true );
+
+            BufferedWriter writer = new BufferedWriter ( file );
+
+            writer.write ( str );
+
+            writer.newLine ();
+
+            writer.close ();
+
+        } catch (IOException e) {
+
+            e.printStackTrace ();
+
+        }
+
+    }
+
+    public static void clearFile (String path){
+
+        try {
+
+            FileWriter file = new FileWriter ( path);
+
+            BufferedWriter writer = new BufferedWriter ( file );
+
+            writer.write ( "" );
+
+            writer.newLine ();
+
+            writer.close ();
+
+        } catch (IOException e) {
+
+            e.printStackTrace ();
+
+        }
+
+    }
+
+
+
+    public static void main(String[] args) {
+
+        String test = "symbol,name,exchange,assetType,ipoDate,delistingDate,status\n" +
+                "A,Agilent Technologies Inc,NYSE,Stock,1999-11-18,null,Active\n" +
+                "AA,Alcoa Corp,NYSE,Stock,2016-10-18,null,Active\n" +
+                "AAA,AAF FIRST PRIORITY CLO BOND ETF ,NYSE ARCA,ETF,2020-09-09,null,Active\n" +
+                "AAAU,Goldman Sachs Physical Gold ETF,BATS,ETF,2018-08-15,null,Active\n" +
+                "AAC,Ares Acquisition Corporation - Class A,NYSE,Stock,2021-03-25,null,Active\n"+
+                "AAC-U,Ares Acquisition Corporation - Units (1 Ord Share Class A & 1/5 War),NYSE,Stock,2021-02-02,null,Active\n"+
+                "AAC-WS,Ares Acquisition Corporation - Warrants (01/01/9999),NYSE,Stock,2021-03-25,null,Active\n"+
+                "AACG,ATA Creativity Global,NASDAQ,Stock,2008-01-29,null,Active"
+                ;
+
+
+        String myFile = "src/main/resources/companySymbols.csv";
+
+        String AAFile = "src/main/resources/AA_data.csv";
+
+        clearFile ( myFile );
+
+        ArrayList<String> arr = csvFromAAParsing ( reader2 ( AAFile ),0 );
+
+        //Clears blank first index
+        arr.trimToSize ();
+
+        arr.stream ().forEach ( s -> writer ( myFile,s ) );
+
+        System.out.println (reader2(myFile));
+
+
+
+        //System.out.println (csvFromAAParsing ( test,0 ));
+
+    }
 }
