@@ -15,7 +15,7 @@ public class Csv {
     //O Blank space at beginning and ending of array
 
 
-    public static ArrayList<String> csvFromAAParsing (String csv,int column) {
+    public static ArrayList<String> csvToArrayListWithLimit(String csv, int column) {
 
         ArrayList<String> strArr = new ArrayList<> ();
 
@@ -31,7 +31,7 @@ public class Csv {
         return strArr;
     }
 
-    public static ArrayList<String> reader (String path ){
+    public static ArrayList<String> csvToArraylist(String path ){
 
         ArrayList<String> file = new ArrayList<> ();
 
@@ -39,7 +39,7 @@ public class Csv {
 
             BufferedReader reader = new BufferedReader(new FileReader ( path ) );
 
-            reader.lines ().skip ( 1 ).limit ( 10 ).forEach ( file::add );
+            reader.lines ().skip ( 1 ).forEach ( file::add );
 
             reader.close ();
 
@@ -56,7 +56,7 @@ public class Csv {
 
     }
 
-    public static String reader2 (String path){
+    public static String csvToString(String path){
 
         StringBuilder file = new StringBuilder ();
 
@@ -125,7 +125,8 @@ public class Csv {
 
     public static void main(String[] args) {
 
-        String test = "symbol,name,exchange,assetType,ipoDate,delistingDate,status\n" +
+        String test =
+                "symbol,name,exchange,assetType,ipoDate,delistingDate,status\n" +
                 "A,Agilent Technologies Inc,NYSE,Stock,1999-11-18,null,Active\n" +
                 "AA,Alcoa Corp,NYSE,Stock,2016-10-18,null,Active\n" +
                 "AAA,AAF FIRST PRIORITY CLO BOND ETF ,NYSE ARCA,ETF,2020-09-09,null,Active\n" +
@@ -133,9 +134,7 @@ public class Csv {
                 "AAC,Ares Acquisition Corporation - Class A,NYSE,Stock,2021-03-25,null,Active\n"+
                 "AAC-U,Ares Acquisition Corporation - Units (1 Ord Share Class A & 1/5 War),NYSE,Stock,2021-02-02,null,Active\n"+
                 "AAC-WS,Ares Acquisition Corporation - Warrants (01/01/9999),NYSE,Stock,2021-03-25,null,Active\n"+
-                "AACG,ATA Creativity Global,NASDAQ,Stock,2008-01-29,null,Active"
-                ;
-
+                "AACG,ATA Creativity Global,NASDAQ,Stock,2008-01-29,null,Active";
 
         String myFile = "src/main/resources/companySymbols.csv";
 
@@ -143,18 +142,14 @@ public class Csv {
 
         clearFile ( myFile );
 
-        ArrayList<String> arr = csvFromAAParsing ( reader2 ( AAFile ),0 );
+        ArrayList<String> arr = csvToArrayListWithLimit ( csvToString ( AAFile ),0 );
 
         //Clears blank first index
         arr.trimToSize ();
 
         arr.stream ().forEach ( s -> writer ( myFile,s ) );
 
-        System.out.println (reader2(myFile));
-
-
-
-        //System.out.println (csvFromAAParsing ( test,0 ));
+        System.out.println ( csvToString (myFile));
 
     }
 }
