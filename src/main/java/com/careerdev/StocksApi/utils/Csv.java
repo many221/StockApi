@@ -145,11 +145,11 @@ public class Csv {
         ArrayList<String> arr = csvToArrayListWithLimit ( csvToString ( AAFile ),0 );
 
         //Clears blank first index
-        arr.trimToSize ();
-
-        arr.stream ().forEach ( s -> writer ( myFile,s ) );
-
-        System.out.println ( csvToString (myFile));
+//        arr.trimToSize ();
+//
+//        arr.stream ().forEach ( s -> writer ( myFile,s ) );
+//
+//        System.out.println ( csvToString (myFile));
 
     }
 }
