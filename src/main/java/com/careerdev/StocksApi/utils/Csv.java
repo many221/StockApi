@@ -2,6 +2,7 @@ package com.careerdev.StocksApi.utils;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Csv {
 
@@ -140,11 +141,14 @@ public class Csv {
 
         String AAFile = "src/main/resources/AA_data.csv";
 
-        clearFile ( myFile );
+        //System.out.println (test);
+        //System.out.println (test);
 
-        ArrayList<String> arr = csvToArrayListWithLimit ( csvToString ( AAFile ),0 );
+        //clearFile ( myFile );
 
-        //Clears blank first index
+//        ArrayList<String> arr = csvToArrayListWithLimit ( csvToString ( AAFile ),0 );
+//
+//        //Clears blank first index
 //        arr.trimToSize ();
 //
 //        arr.stream ().forEach ( s -> writer ( myFile,s ) );
