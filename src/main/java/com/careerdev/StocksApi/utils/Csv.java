@@ -32,6 +32,24 @@ public class Csv {
         return strArr;
     }
 
+
+    public static ArrayList<String> getColumnInstances(String csv, String testValue, String testColumn) {
+
+        ArrayList<String> strArr = new ArrayList<> ();
+
+        int column = Arrays.asList ( csv.split ( "\n" )[0].split ( "," ) ).indexOf ( testColumn );
+        csv.lines ().skip ( 1 ).forEach ( s -> {
+
+            String columnValue = s.split ( "," )[column];
+
+            if (columnValue.equals ( testValue ) )
+                strArr.add ( columnValue );
+
+        } );
+
+        return strArr;
+    }
+
     public static ArrayList<String> csvToArraylist(String path ){
 
         ArrayList<String> file = new ArrayList<> ();
@@ -141,12 +159,18 @@ public class Csv {
 
         String AAFile = "src/main/resources/AA_data.csv";
 
+        int countInstances = getColumnInstances ( csvToString ( AAFile ),"NYSE","exchange" ).size ();
+
+        int countInstances2 = getColumnInstances ( csvToString ( AAFile ),"NASDAQ","exchange" ).size ();
+
+//        System.out.println (countInstances);
+//        System.out.println (countInstances2);
         //System.out.println (test);
         //System.out.println (test);
 
-        //clearFile ( myFile );
+        clearFile ( myFile );
 
-//        ArrayList<String> arr = csvToArrayListWithLimit ( csvToString ( AAFile ),0 );
+        ArrayList<String> arr = csvToArrayListWithLimit ( csvToString ( AAFile ),0 );
 //
 //        //Clears blank first index
 //        arr.trimToSize ();
