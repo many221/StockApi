@@ -4,6 +4,7 @@ import com.careerdev.StocksApi.models.Overview;
 import org.springframework.web.client.RestTemplate;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Scrapping {
@@ -118,6 +119,20 @@ public class Scrapping {
     public static void getAndInstertOverView( String url){
 
         insertOverview ( Objects.requireNonNull ( getOverview ( url ) ) );
+
+    }
+
+
+    public static void divieUpArray (ArrayList arr, int sections){
+
+        if (arr.size () % sections == 0){
+            //think of the logic for this
+            //figure out how to add the remainders into the last group
+            // split array based on how many api keys are given
+            //or set limit per key
+
+        };
+
 
     }
 
