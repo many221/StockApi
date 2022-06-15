@@ -125,13 +125,12 @@ public class Scrapping {
 
     public static void divieUpArray (ArrayList arr, int sections){
 
-        if (arr.size () % sections == 0){
+
             //think of the logic for this
             //figure out how to add the remainders into the last group
             // split array based on how many api keys are given
             //or set limit per key
 
-        };
 
 
     }
