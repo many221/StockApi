@@ -6,11 +6,11 @@ import org.springframework.web.client.RestTemplate;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class Scrapping {
 
     public static String URL_AA = "https://www.alphavantage.co/query?function=OVERVIEW&symbol=IBM&apikey=demo";
-
 
     public static Overview getOverview(String url){
 
@@ -123,29 +123,50 @@ public class Scrapping {
     }
 
 
-    public static void divieUpArray (ArrayList arr, int sections){
-
+    public static void getBatchOfOverviews (ArrayList<String> arr, String key) throws InterruptedException {
 
             //think of the logic for this
             //figure out how to add the remainders into the last group
             // split array based on how many api keys are given
             //or set limit per key
+        int count = 1;
+//        System.out.println (2);
+        for (String symbol: arr) {
 
-
+      //      String url = "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" + symbol + "&apikey=" + key;
+//            System.out.println (3);
+            if (count%6!=0){
+                //            getAndInstertOverView ( url );
+//                System.out.println (4);
+                System.out.println (symbol);
+            }else{
+//                System.out.println (5);
+                Thread.sleep ( 60000 );
+            }
+            count++;
+        }
 
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
-        switch (args[0]) {
-            case "insert" -> getAndInstertOverView ( URL_AA );
-            case "clear" -> clearDatabase ();
-            default -> System.out.println ( "Invalid option" );
-        }
+//        switch (args[0]) {
+//            case "insert" -> getAndInstertOverView ( URL_AA );
+//            case "clear" -> clearDatabase ();
+//            default -> System.out.println ( "Invalid option" );
+//        }
 
+        String myFile = "src/main/resources/companySymbols.csv";
+        ArrayList<String> testArr = Csv.csvToArraylist ( myFile );
 
+        int startIndex =  Integer.parseInt ( args[0] );
 
+        //TODO Check if end index is > length of arrray if it is change end index to array length;
+
+        assert testArr != null;
+        getBatchOfOverviews ( (ArrayList<String>) testArr.subList (startIndex,startIndex+500 ),"heeeheee" );
+        System.out.println (2);
 
     }
 }

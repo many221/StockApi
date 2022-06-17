@@ -168,7 +168,7 @@ public class Csv {
         //System.out.println (test);
         //System.out.println (test);
 
-        clearFile ( myFile );
+       // clearFile ( myFile );
 
         ArrayList<String> arr = csvToArrayListWithLimit ( csvToString ( AAFile ),0 );
 //
