@@ -133,10 +133,10 @@ public class Scrapping {
 //        System.out.println (2);
         for (String symbol: arr) {
 
-      //      String url = "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" + symbol + "&apikey=" + key;
+            String url = "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" + symbol + "&apikey=" + key;
 //            System.out.println (3);
             if (count%6!=0){
-                //            getAndInstertOverView ( url );
+                            getAndInstertOverView ( url );
 //                System.out.println (4);
                 System.out.println (symbol);
             }else{
