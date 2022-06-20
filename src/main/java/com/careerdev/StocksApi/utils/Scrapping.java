@@ -141,7 +141,7 @@ public class Scrapping {
                 System.out.println (symbol);
             }else{
 //                System.out.println (5);
-                Thread.sleep ( 60000 );
+                Thread.sleep ( 6000000 );
             }
             count++;
         }
