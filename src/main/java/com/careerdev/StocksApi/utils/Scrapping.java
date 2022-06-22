@@ -125,10 +125,6 @@ public class Scrapping {
 
     public static void getBatchOfOverviews (ArrayList<String> arr, String key) throws InterruptedException {
 
-            //think of the logic for this
-            //figure out how to add the remainders into the last group
-            // split array based on how many api keys are given
-            //or set limit per key
         int count = 1;
 //        System.out.println (2);
         for (String symbol: arr) {
