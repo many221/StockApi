@@ -128,20 +128,20 @@ public class Scrapping {
         int count = 1;
 //        System.out.println (2);
         for (String symbol: arr) {
-
-            String url = "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" + symbol + "&apikey=" + key;
+            if (!arr.isEmpty ()) {
+                String url = "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" + symbol + "&apikey=" + key;
 //            System.out.println (3);
-            if (count%6!=0){
-                            getAndInstertOverView ( url );
+                if (count % 6 != 0) {
+                    getAndInstertOverView ( url );
 //                System.out.println (4);
-                System.out.println (symbol);
-            }else{
+                    System.out.println ( symbol );
+                } else {
 //                System.out.println (5);
-                Thread.sleep ( 6000000 );
+                    Thread.sleep ( 6000000 );
+                }
+                count++;
             }
-            count++;
         }
-
     }
 
 
@@ -161,8 +161,7 @@ public class Scrapping {
         //TODO Check if end index is > length of arrray if it is change end index to array length;
 
         assert testArr != null;
-        getBatchOfOverviews ( (ArrayList<String>) testArr.subList (startIndex,startIndex+500 ),"heeeheee" );
-        System.out.println (2);
+        getBatchOfOverviews ( (ArrayList<String>) testArr.subList (startIndex,startIndex+500 ), args[1] );
 
     }
 }
